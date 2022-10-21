@@ -1,0 +1,62 @@
+* Notes
+REST:
+- REST: Representational State Transfer
+- Basically a standard that makes it easier for developers to determine how routes are handled
+- Maps HTTP methods to their CRUD (Create Read Update Delete) actions
+
+REST Conventions Table:
+|------------+-----------------+-------------+----------------------------------------|
+| Route Name | URL Path        | HTTP Method | Purpose                                |
+|------------+-----------------+-------------+----------------------------------------|
+| Index      | /object         | GET         | Display list of all objects            |
+| New        | /object/new     | GET         | Offers form to create new object       |
+| Create     | /object         | POST        | Creates new object on server           |
+| Show       | /object:id      | GET         | Displays one specific object's details |
+| Edit       | /object:id/edit | GET         | Offers form to edit specific object    |
+| Update     | /object:id      | PATCH       | Updates specific object on server      |
+| Destroy    | /object:id      | DELETE      | Deletes specific object                |
+|------------+-----------------+-------------+----------------------------------------|
+
+NOTE:
+- By using a 'resource' method within 'config/routes.rb', we generate ALL 7 of the REST routes above.
+
+You can check this out yourself by running 'rails routes' within this lesson's directory, and pipe the results into grep:
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-4/phase-4-lecture-videos-rest/pet-shop $ rails routes | grep "pets"
+The dependency tzinfo-data (>= 0) will be unused by any of the platforms Bundler is installing for. Bundler is installing for ruby but the dependency is only for x86-mingw32, x86-mswin32, x64-mingw32, java. To add those platforms to the bundle, run `bundle lock --add-platform x86-mingw32 x86-mswin32 x64-mingw32 java`.
+                              pets_index GET    /pets/index(.:format)                                                                             pets#index
+                                    pets GET    /pets(.:format)                                                                                   pets#index
+                                new_pets GET    /pets/new(.:format)                                                                               pets#new
+                               edit_pets GET    /pets/edit(.:format)                                                                              pets#edit
+                                         GET    /pets(.:format)                                                                                   pets#show
+                                         PATCH  /pets(.:format)                                                                                   pets#update
+                                         PUT    /pets(.:format)                                                                                   pets#update
+                                         POST   /pets(.:format)                                                                                   pets#create
+#+end_src
+
+You can also use the 'only:' option to limit the amount of routes present as well, so I modified the 'config/routes.rb' file with the following contents:
+#+begin_src ruby
+Rails.application.routes.draw do
+  # Using basic 'http' verb + URL + method pattern:
+  get 'pets/index'
+  resources :shops
+  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  get "pets", to: "pets#index"
+  # Using 'resource' keyword with just 1 of 7 various REST method options
+  # NOTE: Commented out for lesson
+  # resource :pets, only: [:show, :create, :new, :edit, :update]
+  resource :pets, only: [:index, :show]
+
+  # Defines the root path route ("/")
+  # root "articles#index"
+end
+#+end_src
+
+This then changed the corresponding 'rails routes | grep "pets"' related output accordingly:
+#+begin_src bash
+samuelbanya@Samuels-MBP ~/hub/Development/code/phase-4/phase-4-lecture-videos-rest/pet-shop $ rails routes | grep "pets"
+The dependency tzinfo-data (>= 0) will be unused by any of the platforms Bundler is installing for. Bundler is installing for ruby but the dependency is only for x86-mingw32, x86-mswin32, x64-mingw32, java. To add those platforms to the bundle, run `bundle lock --add-platform x86-mingw32 x86-mswin32 x64-mingw32 java`.
+                              pets_index GET    /pets/index(.:format)                                                                             pets#index
+                                    pets GET    /pets(.:format)                                                                                   pets#index
+                                         GET    /pets(.:format)                                                                                   pets#show
+#+end_src
